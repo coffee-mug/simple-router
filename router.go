@@ -5,44 +5,51 @@ import "fmt"
 // Node is a Node from the trie
 type Node struct {
 	char     string
+  value    int
 	children []*Node
 }
 
-//	root:				a
-//	a.children:		b		c
-//	b.children:	c
+//  root:                     nil 
+//	root.children:				    a
+//	a.children:		          b		c
+//	b.children:	          c
 
-// key = abc
-// for key in abc:
-//    if a == node.char (a) :
-//		traverse (bc, node.children[0])
-//			for each
+/*
+  for child in children:
+    if currentComponent.child.char == letter
 
-// Traverse lol
-func (n *Node) Traverse(word string) *Node {
-	letter := word[0]
+    if currentComponent.child.char == nil
+*/
 
-	if letter == n.char {
-		// Key present, must advance to the next
-		if len(word[1:]) > 0 {
-			for _, child := range n.children {
-				if len(word) > 0 {
-					return child.Traverse(word[1:])
-				}
-			}
-		}
-	}
+func (n *Node) traverse(key string) (bool, *Node) {
+  letter := key[0]
 
-	// Ok edge of the graph, should mean that it is good
-	if n.char == nil || letter != nil {
-		return n
-	}
+  for _, child := range n.children {
+    if child.char == letter {
+      // start again, with a letter advanced and the child
+      if len(key[1:]) > 0 {
+        return child.traverse(key[1:])
+      }
+    }
 
-	return false
+    if child == nil || child.char == nil {
+      // We reached the end of the trie, return false and node reference
+      return true, child
+    }
+  }
 }
 
-func (n *Node) Add(key string) {
+func (n *Node) Add(n *Node, key string, value int) {
+  // first traverse to get the node
+  _, node := n.traverse(key)
+}
 
+func NewTrie() *Node {
+  return &Node{
+    char: nil,
+    value: 0,
+    children: make([]*Node)
+  }
 }
 
 func main() {
