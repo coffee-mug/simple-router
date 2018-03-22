@@ -1,50 +1,53 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-// Node is a Node from the trie
 type Node struct {
-	char     string
-	children []*Node
+	value    int
+	children [256]*Node
 }
 
-//	root:				a
-//	a.children:		b		c
-//	b.children:	c
-
-// key = abc
-// for key in abc:
-//    if a == node.char (a) :
-//		traverse (bc, node.children[0])
-//			for each
-
-// Traverse lol
-func (n *Node) Traverse(word string) *Node {
-	letter := word[0]
-
-	if letter == n.char {
-		// Key present, must advance to the next
-		if len(word[1:]) > 0 {
-			for _, child := range n.children {
-				if len(word) > 0 {
-					return child.Traverse(word[1:])
-				}
-			}
-		}
+//Traverse, recursively get the value at provided key, null otherwise the trie
+func (n *Node) Traverse(word string, currentElement int) (int, *Node) {
+	if n == nil {
+		// We reached the end of the trie
+		return 0, n
 	}
+	if currentElement == len(word) {
+		// We reached the end of the trie for that key
+		return n.value, n
+	}
+	return n.children[word[currentElement]].Traverse(word, currentElement+1)
+}
 
-	// Ok edge of the graph, should mean that it is good
-	if n.char == nil || letter != nil {
+func (n *Node) Add(key string, currentElement int, value int) *Node {
+	if n == nil {
 		return n
 	}
 
-	return false
-}
+	if len(key) == currentElement {
+		n.value = value
+		return n
+	}
 
-func (n *Node) Add(key string) {
+	// Add a node at currentElement index
+	deeper := &Node{value: 0, children: [256]*Node{}}
 
+	n.children[key[currentElement]] = deeper
+
+	return deeper.Add(key, currentElement+1, value)
 }
 
 func main() {
-	fmt.Println("lol")
+	root := &Node{value: 0, children: [256]*Node{}}
+
+	lode := root.Add("lol", 0, 12)
+
+	fmt.Println(lode.value)
+
+	got, _ := root.Traverse("lol", 0)
+
+	fmt.Println(got, 12)
 }
